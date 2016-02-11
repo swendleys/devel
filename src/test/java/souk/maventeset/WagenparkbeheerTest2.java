@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class WagenparkbeheerTest1 {
+public class WagenparkbeheerTest2 {
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -27,10 +27,11 @@ public class WagenparkbeheerTest1 {
 	}
 
 	@Test
-	public void testGetData() {
+	public void test() {
 		Wagenparkbeheer w1 = new Wagenparkbeheer();
-		w1.getData();
-		assertEquals(10, w1.value);
+		w1.ignition();
+		assertEquals(660, w1.ignition);
+		
 	}
 
 }

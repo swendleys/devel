@@ -46,6 +46,7 @@ public class Wagenparkbeheer {
 	double Longitude;
 	double x2;
 	double y2;
+	ArrayList<String> arraylist1 = new ArrayList<String>();
 	ArrayList<String> UnitIds = new ArrayList<String>();
 	ArrayList<Double> topSpeed = new ArrayList<Double>();
 	DBCollection collUnits = db.getCollection("collUnits");
@@ -56,6 +57,7 @@ public class Wagenparkbeheer {
 	DBCollection top3 = db.getCollection("top3");
 	HashMap<String, Integer> comHash = new HashMap<String, Integer>();
 	BidiMap<Integer, String> bidi = new TreeBidiMap<Integer, String>();
+	int value = 0;
 
 	public void getData() {
 
@@ -65,8 +67,10 @@ public class Wagenparkbeheer {
 				new BasicDBObject("_id", "$UnitId").append("count", new BasicDBObject("$sum", 1)));
 		DBObject sort = new BasicDBObject("$sort", new BasicDBObject("count", -1));
 		output = coll.aggregate(match, group, sort);
+		
 
 		for (DBObject result : output.results()) {
+			value++;
 			System.out.println("UnitId: " + result.get("_id") + ", Aantal: " + result.get("count"));
 		}
 
@@ -286,10 +290,12 @@ public class Wagenparkbeheer {
 
 	}
 
+	int ignition = 0;
 	public void ignition() {
 		collAan.drop();
 		DBCollection coll1 = db.getCollection("events");
 		ArrayList<String> arraylist = new ArrayList<String>();
+		arraylist1 = arraylist;
 		Set<String> hs = new HashSet<>();
 
 		DBObject group = new BasicDBObject("$group",
@@ -333,6 +339,7 @@ public class Wagenparkbeheer {
 					// "+arraylist.get(m)+", "+ "Aantal keer aan: "+aantal);
 					System.out.println(cursor1.next());
 					aantal++;
+					ignition++;
 					//System.out.println(aantal);
 				}
 				String json = "{\"UnitId\": " + "\"" + unit + "\"" + ",\"Dag\": " + "\"" + arraylist.get(m) + "\""
@@ -343,8 +350,12 @@ public class Wagenparkbeheer {
 				//System.out.println("UnitId: " + unit + ", " + "Dag: " + arraylist.get(m) + ", " + aantal);
 
 			}
+			System.out.println(arraylist.size());
 		}
+	
+		System.out.println(ignition);
 	}
+	
 
 	public void saveData() {
 
@@ -352,6 +363,7 @@ public class Wagenparkbeheer {
 		Iterator<DBObject> mc = output.results().iterator();
 		Iterator<DBObject> iteratorToArray = mc;
 		List<DBObject> convertedIterator = Lists.newArrayList(iteratorToArray);
+	
 		DBObject options = BasicDBObjectBuilder.start().add("capped", true).add("size", 2000000000l).get();
 		DBCollection collection = db.createCollection("collTotaalAanUit", options);
 		collection.insert(convertedIterator);
